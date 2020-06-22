@@ -18,7 +18,7 @@ public class TerminalImpl implements Terminal{
             throw new TerminalException("Неверный PIN-код. Попробуйте еще раз", e);
         }
         catch (PinLockException e) {
-            throw new TerminalException("Система заблокирована. Повторный ввод будет возможен через" + e.timeRemaining() + " секунд", e);
+            throw new TerminalException("Система заблокирована. Повторный ввод будет возможен через " + e.timeRemaining() + " сек.", e);
         }
     }
 

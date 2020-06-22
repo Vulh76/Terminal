@@ -20,13 +20,13 @@ class PinValidateException extends TerminalException {
 
 class PinLockException extends TerminalException {
     // Время, оставшееся до окончания блокировки
-    private final int timeRemaining;
+    private final long timeRemaining;
 
-    public PinLockException(int timeRemaining) {
+    public PinLockException(long timeRemaining) {
         this.timeRemaining = timeRemaining;
     }
 
-    public int timeRemaining() { return timeRemaining; }
+    public long timeRemaining() { return timeRemaining; }
 }
 
 class ServerConnectionException extends TerminalException {

@@ -1,5 +1,7 @@
 package stb.lessons;
 
+import java.time.Instant;
+import java.time.temporal.ChronoField;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -14,16 +16,22 @@ public class PinValidator {
     private int attemptCounter = 0;
     private boolean valid = false;
     private boolean lock = false;
-
-    private final Timer timer;
+    private Instant lockTime;
 
     public PinValidator() {
-        this.timer = new Timer();
     }
 
     public void validate(int pin) throws PinValidateException, PinLockException {
-        if(lock)
-            throw new PinLockException(1);
+        if(lock) {
+            long timePassed = Instant.now().getEpochSecond() - lockTime.getEpochSecond();
+            if(timePassed < LOCK_TIME) {
+                throw new PinLockException(LOCK_TIME - timePassed);
+            }
+            else {
+                lock = false;
+                attemptCounter = 0;
+            }
+        }
 
         if(pin == this.pin) {
             this.attemptCounter = 0;
@@ -33,13 +41,7 @@ public class PinValidator {
             this.valid = false;
             if(++attemptCounter == MAX_ATTEMPTS) {
                 this.lock = true;
-                this.timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        lock = false;
-                        attemptCounter = 0;
-                    }
-                }, LOCK_TIME * 1000);
+                lockTime = Instant.now();
             }
             throw new PinValidateException();
         }
@@ -51,7 +53,6 @@ public class PinValidator {
     }
 
     public void reset() {
-        this.timer.cancel();
         this.valid = false;
         this.lock = false;
         this.attemptCounter = 0;
